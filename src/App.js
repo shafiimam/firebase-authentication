@@ -15,11 +15,13 @@ function App() {
     photo: "",
   });
   const [newUser, setNewUser] = useState(false);
-  const provider = new firebase.auth.GoogleAuthProvider();
+  const googleProvider = new firebase.auth.GoogleAuthProvider();
+  const fbProvider = new firebase.auth.FacebookAuthProvider();
+
   const handleSignIn = () => {
     firebase
       .auth()
-      .signInWithPopup(provider)
+      .signInWithPopup(googleProvider)
       .then((res) => {
         var { displayName, photoURL, email } = res.user;
         const signedInUser = {
@@ -31,14 +33,24 @@ function App() {
         setUser(signedInUser);
       })
       .catch((error) => {
-        // var errorCode = error.code;
-        // var errorMessage = error.message;
-        // var email = error.email;
-        // var credential = error.credential;
         console.log(error);
         console.log(error.message);
       });
   };
+  const handleFbSignIn = () => {
+    firebase
+  .auth()
+  .signInWithPopup(fbProvider)
+  .then((result) => {
+    var user = result.user;
+    console.log('fb user after sign in:' ,user);
+  })
+  .catch((error) => {
+    console.log(error.message);
+ 
+  });
+
+  }
   const handleSignOut = () => {
     firebase
       .auth()
@@ -99,7 +111,6 @@ function App() {
         });
     }
     event.preventDefault();
-    event.target.value = '';
   };
   const handleBlur = (event) => {
     let isFieldValid = true;
@@ -143,6 +154,7 @@ function App() {
       ) : (
         <button onClick={handleSignIn}>sign in</button>
       )}
+      <button onClick={handleFbSignIn}>sign in using facebook</button>
       {user.isSignedIn && (
         <div>
           <p> welcome, {user.name}</p>
