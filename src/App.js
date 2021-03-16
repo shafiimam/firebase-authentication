@@ -17,7 +17,7 @@ function App() {
   const [newUser, setNewUser] = useState(false);
   const googleProvider = new firebase.auth.GoogleAuthProvider();
   const fbProvider = new firebase.auth.FacebookAuthProvider();
-
+  const githubProvider = new firebase.auth.GithubAuthProvider();
   const handleSignIn = () => {
     firebase
       .auth()
@@ -41,15 +41,45 @@ function App() {
     firebase
   .auth()
   .signInWithPopup(fbProvider)
-  .then((result) => {
-    var user = result.user;
+  .then((res) => {
+    var user = res.user;
     console.log('fb user after sign in:' ,user);
+    var { displayName, photoURL, email } = res.user;
+        const signedInUser = {
+          isSignedIn: true,
+          name: displayName,
+          email: email,
+          photo: photoURL,
+        };
+        setUser(signedInUser);
   })
   .catch((error) => {
     console.log(error.message);
  
   });
+}
+  const handleGitSignIn = () => {
+    firebase
+  .auth()
+  .signInWithPopup(githubProvider)
+  .then((res) => {
+    var user = res.user;
+    console.log('git user after sign in:' ,user);
+    var { displayName, photoURL, email } = res.user;
+        const signedInUser = {
+          isSignedIn: true,
+          name: displayName,
+          email: email,
+          photo: photoURL,
+        };
+        setUser(signedInUser);
 
+  })
+  .catch((error) => {
+    console.log(error.message);
+ 
+  });
+  
   }
   const handleSignOut = () => {
     firebase
@@ -152,9 +182,13 @@ function App() {
       {user.isSignedIn ? (
         <button onClick={handleSignOut}>Sing Out</button>
       ) : (
-        <button onClick={handleSignIn}>sign in</button>
+        <div>
+          <button onClick={handleSignIn}>sign in with Google</button>
+        <button onClick={handleFbSignIn}>sign in using facebook</button>
+      <button onClick={handleGitSignIn}>sign in using github</button>
+        </div>
       )}
-      <button onClick={handleFbSignIn}>sign in using facebook</button>
+      
       {user.isSignedIn && (
         <div>
           <p> welcome, {user.name}</p>
@@ -207,5 +241,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;
